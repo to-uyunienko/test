@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>サブスク&ローン家計管理</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="app-header">
+  <h1>サブスク&ローン家計管理</h1>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="dashboard">ダッシュボード</button>
+    <button class="tab-btn" data-tab="subscriptions">サブスクリプション</button>
+    <button class="tab-btn" data-tab="loans">ローン・借入</button>
+  </nav>
+</header>
+
+<main>
+  <!-- ダッシュボード -->
+  <section id="dashboard" class="tab-panel active">
+    <div class="summary-cards">
+      <div class="card">
+        <div class="card-label">今月の支出合計</div>
+        <div class="card-value" id="summary-monthly-total">¥0</div>
+        <div class="card-sub">サブスク + ローン返済</div>
+      </div>
+      <div class="card">
+        <div class="card-label">サブスク(月換算)</div>
+        <div class="card-value" id="summary-sub-total">¥0</div>
+        <div class="card-sub" id="summary-sub-count">0件</div>
+      </div>
+      <div class="card">
+        <div class="card-label">ローン月次返済額</div>
+        <div class="card-value" id="summary-loan-total">¥0</div>
+        <div class="card-sub" id="summary-loan-count">0件</div>
+      </div>
+      <div class="card">
+        <div class="card-label">年間支出合計(概算)</div>
+        <div class="card-value" id="summary-annual-total">¥0</div>
+        <div class="card-sub">サブスク年換算 + ローン12ヶ月分</div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="panel">
+        <h2>内訳</h2>
+        <div id="chart-breakdown" class="chart-box"></div>
+      </div>
+      <div class="panel">
+        <h2>カテゴリ別(サブスク)</h2>
+        <div id="chart-category" class="chart-box"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>今後30日以内の支払い予定</h2>
+      <table class="data-table" id="upcoming-table">
+        <thead>
+          <tr><th>日付</th><th>種別</th><th>名称</th><th>金額</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p class="empty-msg" id="upcoming-empty" hidden>今後30日以内の支払い予定はありません。</p>
+    </div>
+  </section>
+
+  <!-- サブスクリプション -->
+  <section id="subscriptions" class="tab-panel">
+    <div class="panel">
+      <h2 id="sub-form-title">サブスクを追加</h2>
+      <form id="sub-form" class="entry-form">
+        <input type="hidden" id="sub-id">
+        <div class="form-row">
+          <label>サービス名<input type="text" id="sub-name" required placeholder="例: Netflix"></label>
+          <label>カテゴリ<input type="text" id="sub-category" list="category-list" placeholder="例: エンタメ"></label>
+        </div>
+        <div class="form-row">
+          <label>金額(円)<input type="number" id="sub-amount" required min="0" step="1"></label>
+          <label>周期
+            <select id="sub-cycle">
+              <option value="monthly">月次</option>
+              <option value="annual">年次</option>
+            </select>
+          </label>
+          <label>次回請求日<input type="date" id="sub-next-date" required></label>
+        </div>
+        <div class="form-row">
+          <label class="full">メモ<input type="text" id="sub-note" placeholder="任意"></label>
+        </div>
+        <div class="form-actions">
+          <button type="submit" id="sub-submit-btn">追加</button>
+          <button type="button" id="sub-cancel-btn" hidden>編集をキャンセル</button>
+        </div>
+      </form>
+      <datalist id="category-list"></datalist>
+    </div>
+
+    <div class="panel">
+      <h2>登録済みサブスク一覧</h2>
+      <table class="data-table" id="sub-table">
+        <thead>
+          <tr>
+            <th>サービス名</th><th>カテゴリ</th><th>金額</th><th>周期</th>
+            <th>月換算</th><th>次回請求日</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p class="empty-msg" id="sub-empty" hidden>登録されているサブスクはありません。</p>
+    </div>
+  </section>
+
+  <!-- ローン・借入 -->
+  <section id="loans" class="tab-panel">
+    <div class="panel">
+      <h2 id="loan-form-title">ローンを追加</h2>
+      <form id="loan-form" class="entry-form">
+        <input type="hidden" id="loan-id">
+        <div class="form-row">
+          <label>ローン名<input type="text" id="loan-name" required placeholder="例: 自動車ローン"></label>
+          <label>借入元金(円)<input type="number" id="loan-principal" required min="0" step="1"></label>
+        </div>
+        <div class="form-row">
+          <label>年利(%)<input type="number" id="loan-rate" required min="0" step="0.01" value="0"></label>
+          <label>返済期間(ヶ月)<input type="number" id="loan-term" required min="1" step="1"></label>
+          <label>借入開始日<input type="date" id="loan-start" required></label>
+        </div>
+        <div class="form-row">
+          <label class="full">メモ<input type="text" id="loan-note" placeholder="任意"></label>
+        </div>
+        <div class="form-actions">
+          <button type="submit" id="loan-submit-btn">追加</button>
+          <button type="button" id="loan-cancel-btn" hidden>編集をキャンセル</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>登録済みローン一覧</h2>
+      <table class="data-table" id="loan-table">
+        <thead>
+          <tr>
+            <th>ローン名</th><th>元金</th><th>年利</th><th>期間</th>
+            <th>月次返済額</th><th>残債(概算)</th><th>完済予定日</th><th>状態</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p class="empty-msg" id="loan-empty" hidden>登録されているローンはありません。</p>
+    </div>
+  </section>
+</main>
+
+<script src="js/charts.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/subscriptions.js"></script>
+<script src="js/loans.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
